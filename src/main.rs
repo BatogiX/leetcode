@@ -9,21 +9,23 @@ fn main() {
 
 pub fn search_insert(nums: Vec<i32>, target: i32) -> i32 {
     let mut left = 0;
-    let mut right = nums.len();
+    let mut right = nums.len() as i32 - 1;
+    let mut answer = nums.len() as i32;
 
-    while left < right {
-        let mid = (left + right) / 2;
+    while left <= right {
+        let mid = left + (right - left) / 2;
 
-        if target == nums[mid] {
-            return mid as i32;
+        if target == nums[mid as usize] {
+            return mid;
         }
 
-        if target < nums[mid] {
-            right = mid
+        if target < nums[mid as usize] {
+            right = mid - 1;
+            answer = mid;
         } else {
             left = mid + 1
         }
     }
 
-    left as i32
+    answer
 }
