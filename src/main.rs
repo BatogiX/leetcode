@@ -1,64 +1,43 @@
-use std::{cell::RefCell, rc::Rc};
-
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
-}
-
-impl TreeNode {
-    #[inline]
-    #[must_use]
-    pub const fn new(val: i32) -> Self {
-        Self {
-            val,
-            left: None,
-            right: None,
-        }
-    }
-}
-
 pub struct Solution;
 
 impl Solution {
     #[must_use]
-    pub fn sorted_array_to_bst(nums: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
-        if nums.is_empty() {
-            return None;
+    pub fn generate(num_rows: i32) -> Vec<Vec<i32>> {
+        let mut triangle = vec![vec![1]];
+
+        if num_rows == 1 {
+            return triangle;
         }
 
-        let mut mid = nums.len() / 2;
-        let mut bst = Rc::new(RefCell::new(TreeNode {
-            val: nums[mid],
-            left: Self::sorted_array_to_bst(nums[..mid].to_owned()),
-            right: Self::sorted_array_to_bst(nums[mid + 1..].to_owned()),
-        }));
+        for num_row in 2..=num_rows {
+            let mut row = Vec::with_capacity(num_row as usize);
+            row.push(1);
+            row.push(1);
 
-        Some(bst)
+            for index in 1..num_row - 1 {
+                let prev1 = triangle[num_row as usize - 2][index as usize - 1];
+                let prev2 = triangle[num_row as usize - 2][index as usize];
+                row.insert(index as usize, prev1 + prev2);
+            }
+
+            triangle.push(row);
+        }
+
+        triangle
     }
 }
 
 fn main() {
-    let bst = Some(Rc::new(RefCell::new(TreeNode {
-        val: 0,
-        left: Some(Rc::new(RefCell::new(TreeNode {
-            val: -3,
-            left: Some(Rc::new(RefCell::new(TreeNode::new(-10)))),
-            right: None,
-        }))),
-        right: Some(Rc::new(RefCell::new(TreeNode {
-            val: 9,
-            left: Some(Rc::new(RefCell::new(TreeNode::new(5)))),
-            right: None,
-        }))),
-    })));
-    assert_eq!(bst, Solution::sorted_array_to_bst(vec![-10, -3, 0, 5, 9]));
+    assert_eq!(
+        vec![
+            vec![1],
+            vec![1, 1],
+            vec![1, 2, 1],
+            vec![1, 3, 3, 1],
+            vec![1, 4, 6, 4, 1]
+        ],
+        Solution::generate(5)
+    );
 
-    let bst = Some(Rc::new(RefCell::new(TreeNode {
-        val: 3,
-        left: Some(Rc::new(RefCell::new(TreeNode::new(1)))),
-        right: None,
-    })));
-    assert_eq!(bst, Solution::sorted_array_to_bst(vec![1, 3]));
+    assert_eq!(vec![vec![1]], Solution::generate(1));
 }
