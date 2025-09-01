@@ -28,5 +28,4 @@ fn main() {
     assert_eq!(12, Solution::max_profit(vec![8, 20, 4, 5]));
     assert_eq!(0, Solution::max_profit(vec![1]));
     assert_eq!(9, Solution::max_profit(vec![1, 10]));
-    assert_eq!(3, Solution::max_profit(vec![1, 10]));
 }
