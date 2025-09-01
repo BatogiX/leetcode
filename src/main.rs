@@ -2,30 +2,19 @@ pub struct Solution;
 
 impl Solution {
     #[must_use]
-    pub fn max_profit(prices: Vec<i32>) -> i32 {
-        let mut min_price = prices[0];
-        let mut max_profit = 0;
+    pub fn single_number(nums: Vec<i32>) -> i32 {
+        let mut single_num = nums[0];
 
-        for price in &prices[1..] {
-            if *price < min_price {
-                min_price = *price;
-                continue;
-            }
-
-            let profit = price - min_price;
-            if profit > max_profit {
-                max_profit = profit;
-            }
+        for num in &nums[1..] {
+            single_num ^= num;
         }
 
-        max_profit
+        single_num
     }
 }
 
 fn main() {
-    assert_eq!(5, Solution::max_profit(vec![7, 1, 5, 3, 6, 4]));
-    assert_eq!(0, Solution::max_profit(vec![7, 6, 4, 3, 1]));
-    assert_eq!(12, Solution::max_profit(vec![8, 20, 4, 5]));
-    assert_eq!(0, Solution::max_profit(vec![1]));
-    assert_eq!(9, Solution::max_profit(vec![1, 10]));
+    assert_eq!(1, Solution::single_number(vec![2, 2, 1]));
+    assert_eq!(4, Solution::single_number(vec![4, 1, 2, 1, 2]));
+    assert_eq!(1, Solution::single_number(vec![1]));
 }
