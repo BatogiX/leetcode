@@ -1,36 +1,64 @@
 pub struct Solution;
 
-use std::collections::{HashMap, hash_map::Entry};
-
 impl Solution {
     #[must_use]
-    pub fn contains_nearby_duplicate(nums: Vec<i32>, k: i32) -> bool {
-        let mut hm = HashMap::with_capacity(nums.len());
+    pub fn summary_ranges(nums: Vec<i32>) -> Vec<String> {
+        let len = nums.len();
+        let mut ranges = vec![];
+        let mut memorized_num = None;
 
-        for (index, num) in nums.iter().enumerate() {
-            match hm.entry(num) {
-                Entry::Occupied(mut occupied_entry) => {
-                    if index.abs_diff(*occupied_entry.get()) <= k as usize {
-                        return true;
-                    }
+        if len == 0 {
+            return ranges;
+        }
 
-                    occupied_entry.insert(index);
+        if len == 1 {
+            ranges.push(nums[0].to_string());
+            return ranges;
+        }
+
+        for i in 0..len - 1 {
+            if nums[i + 1] - nums[i] == 1 {
+                if memorized_num.is_none() {
+                    memorized_num = Some(nums[i]);
                 }
-                Entry::Vacant(vacant_entry) => {
-                    vacant_entry.insert(index);
+                continue;
+            }
+
+            match memorized_num {
+                Some(num) => {
+                    ranges.push(format!("{num}->{}", nums[i]));
+                    memorized_num = None;
                 }
+                None => ranges.push(nums[i].to_string()),
             }
         }
 
-        false
+        match memorized_num {
+            Some(num) => ranges.push(format!("{num}->{}", nums[len - 1])),
+            None => ranges.push(nums[len - 1].to_string()),
+        }
+
+        ranges
     }
 }
 
 fn main() {
-    assert!(Solution::contains_nearby_duplicate(vec![1, 2, 3, 1], 3));
-    assert!(Solution::contains_nearby_duplicate(vec![1, 0, 1, 1], 1));
-    assert!(!Solution::contains_nearby_duplicate(
-        vec![1, 2, 3, 1, 2, 3],
-        2
-    ));
+    assert_eq!(
+        vec!["0->2", "4->5", "7"],
+        Solution::summary_ranges(vec![0, 1, 2, 4, 5, 7])
+    );
+
+    assert_eq!(
+        vec!["0", "2->4", "6", "8->9"],
+        Solution::summary_ranges(vec![0, 2, 3, 4, 6, 8, 9])
+    );
+
+    assert_eq!(
+        vec!["0->2", "4->6"],
+        Solution::summary_ranges(vec![0, 1, 2, 4, 5, 6])
+    );
+
+    assert_eq!(Vec::<String>::new(), Solution::summary_ranges(vec![]));
+    assert_eq!(vec!["1"], Solution::summary_ranges(vec![1]));
+    assert_eq!(vec!["1->2"], Solution::summary_ranges(vec![1, 2]));
 }
