@@ -1,26 +1,32 @@
 pub struct Solution;
 
 impl Solution {
-    #[must_use]
-    pub fn missing_number(mut nums: Vec<i32>) -> i32 {
-        nums.sort_unstable();
+    pub fn move_zeroes(nums: &mut Vec<i32>) {
+        let mut j = 0;
 
-        for (index, num) in nums.iter().enumerate() {
-            if *num != index as i32 {
-                return index as i32;
+        for i in 0..nums.len() {
+            if nums[i] != 0 {
+                nums[j] = nums[i];
+                j += 1;
             }
         }
 
-        nums.len() as i32
+        for i in j..nums.len() {
+            nums[i] = 0;
+        }
     }
 }
 
 fn main() {
-    assert_eq!(2, Solution::missing_number(vec![3, 0, 1]));
-    assert_eq!(2, Solution::missing_number(vec![0, 1]));
-    assert_eq!(8, Solution::missing_number(vec![9, 6, 4, 2, 3, 5, 7, 0, 1]));
-    assert_eq!(0, Solution::missing_number(vec![9, 6, 4, 2, 3, 5, 7, 8, 1]));
-    assert_eq!(0, Solution::missing_number(vec![1]));
-    assert_eq!(1, Solution::missing_number(vec![0]));
-    assert_eq!(0, Solution::missing_number(vec![2]));
+    let mut nums = vec![0, 1, 0, 3, 12];
+    Solution::move_zeroes(&mut nums);
+    assert_eq!(vec![1, 3, 12, 0, 0], nums);
+
+    let mut nums = vec![0];
+    Solution::move_zeroes(&mut nums);
+    assert_eq!(vec![0], nums);
+
+    let mut nums = vec![0, 0, 1];
+    Solution::move_zeroes(&mut nums);
+    assert_eq!(vec![1, 0, 0], nums);
 }
