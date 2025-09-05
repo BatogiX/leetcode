@@ -1,54 +1,39 @@
-use std::collections::{HashMap, hash_map::Entry};
-
 struct Solution;
 
 impl Solution {
-    pub fn intersect(mut nums1: Vec<i32>, mut nums2: Vec<i32>) -> Vec<i32> {
-        let min_len = nums1.len().min(nums2.len());
-        let mut hm = HashMap::with_capacity(min_len);
-        let mut answer = Vec::with_capacity(min_len);
+    pub fn third_max(mut nums: Vec<i32>) -> i32 {
+        let len = nums.len();
 
-        if min_len == nums1.len() {
-            (nums1, nums2) = (nums2, nums1);
+        if len == 1 {
+            return nums[0];
         }
 
-        for num in nums1 {
-            match hm.entry(num) {
-                Entry::Occupied(mut occupied_entry) => *occupied_entry.get_mut() += 1,
-                Entry::Vacant(vacant_entry) => {
-                    vacant_entry.insert(1);
+        if len == 2 {
+            return nums[0].max(nums[1]);
+        }
+
+        nums.sort_unstable();
+        let mut nums_iter_rev = nums.iter().rev();
+        let mut prev = nums_iter_rev.next().unwrap();
+        let mut count = 1;
+
+        for num in nums_iter_rev {
+            if num != prev {
+                if count == 2 {
+                    return *num;
                 }
+                count += 1;
+                prev = num;
             }
         }
 
-        for num in nums2 {
-            if let Entry::Occupied(mut occupied_entry) = hm.entry(num) {
-                let value = occupied_entry.get_mut();
-
-                if *value == 1 {
-                    occupied_entry.remove();
-                } else {
-                    *value -= 1;
-                }
-
-                answer.push(num);
-            }
-        }
-
-        answer
+        nums[len - 1]
     }
 }
 
 fn main() {
-    assert_eq!(
-        vec![2, 2],
-        Solution::intersect(vec![1, 2, 2, 1], vec![2, 2])
-    );
-
-    assert_eq!(
-        vec![4, 9],
-        Solution::intersect(vec![4, 9, 5], vec![9, 4, 9, 8, 4])
-    );
-
-    assert_eq!(vec![1], Solution::intersect(vec![3, 1, 2], vec![1, 1]));
+    assert_eq!(1, Solution::third_max(vec![3, 2, 1]));
+    assert_eq!(2, Solution::third_max(vec![1, 2]));
+    assert_eq!(1, Solution::third_max(vec![2, 2, 3, 1]));
+    assert_eq!(2, Solution::third_max(vec![1, 1, 2]));
 }
