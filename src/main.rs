@@ -1,46 +1,43 @@
 struct Solution;
 
 impl Solution {
-    pub fn find_disappeared_numbers(mut nums: Vec<i32>) -> Vec<i32> {
-        for i in 0..nums.len() {
-            let index = (nums[i].abs() - 1) as usize;
-            if nums[index] > 0 {
-                nums[index] = -nums[index];
+    pub fn find_content_children(mut g: Vec<i32>, mut s: Vec<i32>) -> i32 {
+        let mut fed_children = 0;
+        g.sort_unstable();
+        s.sort_unstable();
+        s.reverse();
+
+        let mut index = 0;
+        while index < g.len() {
+            let Some(content) = s.pop() else { break };
+
+            if content >= g[index] {
+                fed_children += 1;
+                index += 1;
             }
         }
 
-        let mut disappeared_numbers = vec![];
-        for (index, &num) in nums.iter().enumerate() {
-            if num > 0 {
-                disappeared_numbers.push((index + 1) as i32);
-            }
-        }
-
-        disappeared_numbers
+        fed_children
     }
 }
 
 fn main() {
     assert_eq!(
-        vec![5, 6],
-        Solution::find_disappeared_numbers(vec![4, 3, 2, 7, 8, 2, 3, 1])
+        1,
+        Solution::find_content_children(vec![1, 2, 3], vec![1, 1])
     );
+
     assert_eq!(
-        vec![5, 6, 9],
-        Solution::find_disappeared_numbers(vec![4, 3, 2, 7, 8, 8, 2, 3, 1])
+        2,
+        Solution::find_content_children(vec![1, 2], vec![1, 2, 3])
     );
+
+    assert_eq!(0, Solution::find_content_children(vec![1], vec![]));
+    assert_eq!(1, Solution::find_content_children(vec![1], vec![1, 2]));
+    assert_eq!(0, Solution::find_content_children(vec![2, 2], vec![1, 1]));
+    assert_eq!(0, Solution::find_content_children(vec![2, 2], vec![1]));
     assert_eq!(
-        vec![5, 6, 9, 10],
-        Solution::find_disappeared_numbers(vec![4, 3, 2, 7, 8, 8, 8, 2, 3, 1])
-    );
-    assert_eq!(vec![2], Solution::find_disappeared_numbers(vec![1, 1]));
-    assert_eq!(vec![1], Solution::find_disappeared_numbers(vec![2, 2]));
-    assert_eq!(
-        Vec::<i32>::new(),
-        Solution::find_disappeared_numbers(vec![1, 2])
-    );
-    assert_eq!(
-        vec![1, 3],
-        Solution::find_disappeared_numbers(vec![2, 2, 2])
+        2,
+        Solution::find_content_children(vec![10, 9, 8, 7], vec![5, 6, 7, 8])
     );
 }
