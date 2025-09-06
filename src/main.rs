@@ -1,43 +1,44 @@
 struct Solution;
 
 impl Solution {
-    pub fn find_content_children(mut g: Vec<i32>, mut s: Vec<i32>) -> i32 {
-        let mut fed_children = 0;
-        g.sort_unstable();
-        s.sort_unstable();
-        s.reverse();
+    pub fn island_perimeter(grid: Vec<Vec<i32>>) -> i32 {
+        let rows_len = grid.len() as i32;
+        let columns_len = grid[0].len() as i32;
+        let mut total_perimeter = 0;
 
-        let mut index = 0;
-        while index < g.len() {
-            let Some(content) = s.pop() else { break };
+        for (y, row) in grid.iter().enumerate() {
+            for (x, cell) in row.iter().enumerate() {
+                if cell == &1 {
+                    for cord in [-1, 1] {
+                        let mut adj = x as i32 + cord;
+                        if adj == -1 || adj == columns_len || grid[y][adj as usize] == 0 {
+                            total_perimeter += 1;
+                        }
 
-            if content >= g[index] {
-                fed_children += 1;
-                index += 1;
+                        adj = y as i32 + cord;
+                        if adj == -1 || adj == rows_len || grid[adj as usize][x] == 0 {
+                            total_perimeter += 1;
+                        }
+                    }
+                }
             }
         }
 
-        fed_children
+        total_perimeter
     }
 }
 
 fn main() {
     assert_eq!(
-        1,
-        Solution::find_content_children(vec![1, 2, 3], vec![1, 1])
+        16,
+        Solution::island_perimeter(vec![
+            vec![0, 1, 0, 0],
+            vec![1, 1, 1, 0],
+            vec![0, 1, 0, 0],
+            vec![1, 1, 0, 0]
+        ])
     );
 
-    assert_eq!(
-        2,
-        Solution::find_content_children(vec![1, 2], vec![1, 2, 3])
-    );
-
-    assert_eq!(0, Solution::find_content_children(vec![1], vec![]));
-    assert_eq!(1, Solution::find_content_children(vec![1], vec![1, 2]));
-    assert_eq!(0, Solution::find_content_children(vec![2, 2], vec![1, 1]));
-    assert_eq!(0, Solution::find_content_children(vec![2, 2], vec![1]));
-    assert_eq!(
-        2,
-        Solution::find_content_children(vec![10, 9, 8, 7], vec![5, 6, 7, 8])
-    );
+    assert_eq!(4, Solution::island_perimeter(vec![vec![1]]));
+    assert_eq!(4, Solution::island_perimeter(vec![vec![1, 0]]));
 }
