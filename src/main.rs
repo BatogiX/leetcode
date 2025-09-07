@@ -1,45 +1,24 @@
 struct Solution;
 
 impl Solution {
-    pub fn find_max_consecutive_ones(nums: Vec<i32>) -> i32 {
-        let mut max_consecutive_ones = 0;
-        let mut consecutive_ones = 0;
-
-        for num in nums {
-            if num == 1 {
-                consecutive_ones += 1;
-            } else {
-                if consecutive_ones > max_consecutive_ones {
-                    max_consecutive_ones = consecutive_ones;
-                }
-
-                consecutive_ones = 0;
-            }
+    pub fn find_poisoned_duration(time_series: Vec<i32>, duration: i32) -> i32 {
+        if duration == 0 {
+            return 0;
         }
 
-        if consecutive_ones > max_consecutive_ones {
-            max_consecutive_ones = consecutive_ones;
+        let mut total_poisoned_duration = 0;
+        for index in 0..time_series.len() - 1 {
+            total_poisoned_duration += (time_series[index + 1] - time_series[index]).min(duration);
         }
 
-        max_consecutive_ones
+        total_poisoned_duration += duration;
+        total_poisoned_duration
     }
 }
 
 fn main() {
-    assert_eq!(
-        Solution::find_max_consecutive_ones(vec![1, 1, 0, 1, 1, 1]),
-        3
-    );
-
-    assert_eq!(
-        Solution::find_max_consecutive_ones(vec![1, 0, 1, 1, 0, 1]),
-        2
-    );
-
-    assert_eq!(Solution::find_max_consecutive_ones(vec![1]), 1);
-    assert_eq!(Solution::find_max_consecutive_ones(vec![0]), 0);
-    assert_eq!(
-        Solution::find_max_consecutive_ones(vec![1, 0, 1, 1, 0, 1]),
-        2
-    );
+    assert_eq!(Solution::find_poisoned_duration(vec![1, 4], 2), 4);
+    assert_eq!(Solution::find_poisoned_duration(vec![1, 2], 2), 3);
+    assert_eq!(Solution::find_poisoned_duration(vec![1, 3], 3), 5);
+    assert_eq!(Solution::find_poisoned_duration(vec![1, 4, 6], 2), 6);
 }
