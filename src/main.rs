@@ -1,24 +1,47 @@
 struct Solution;
 
+use std::collections::HashMap;
+
 impl Solution {
-    pub fn find_poisoned_duration(time_series: Vec<i32>, duration: i32) -> i32 {
-        if duration == 0 {
-            return 0;
+    pub fn next_greater_element(nums1: Vec<i32>, nums2: Vec<i32>) -> Vec<i32> {
+        let mut ans = vec![];
+        let nums2_hm = {
+            let mut nums2_hm = HashMap::with_capacity(nums2.len());
+
+            for (index, num) in nums2.iter().enumerate() {
+                nums2_hm.insert(num, index);
+            }
+
+            nums2_hm
+        };
+
+        for num1 in nums1 {
+            let nums2_index = nums2_hm.get(&num1).unwrap();
+            for i in nums2_index + 1..=nums2.len() {
+                match nums2.get(i) {
+                    Some(&num2) => {
+                        if num2 > num1 {
+                            ans.push(num2);
+                            break;
+                        }
+                    }
+                    None => ans.push(-1),
+                }
+            }
         }
 
-        let mut total_poisoned_duration = 0;
-        for index in 0..time_series.len() - 1 {
-            total_poisoned_duration += (time_series[index + 1] - time_series[index]).min(duration);
-        }
-
-        total_poisoned_duration += duration;
-        total_poisoned_duration
+        ans
     }
 }
 
 fn main() {
-    assert_eq!(Solution::find_poisoned_duration(vec![1, 4], 2), 4);
-    assert_eq!(Solution::find_poisoned_duration(vec![1, 2], 2), 3);
-    assert_eq!(Solution::find_poisoned_duration(vec![1, 3], 3), 5);
-    assert_eq!(Solution::find_poisoned_duration(vec![1, 4, 6], 2), 6);
+    assert_eq!(
+        Solution::next_greater_element(vec![4, 1, 2], vec![1, 3, 4, 2]),
+        vec![-1, 3, -1]
+    );
+
+    assert_eq!(
+        Solution::next_greater_element(vec![2, 4], vec![1, 2, 3, 4]),
+        vec![3, -1]
+    );
 }
