@@ -3,45 +3,70 @@ struct Solution;
 use std::collections::HashMap;
 
 impl Solution {
-    pub fn next_greater_element(nums1: Vec<i32>, nums2: Vec<i32>) -> Vec<i32> {
-        let mut ans = vec![];
-        let nums2_hm = {
-            let mut nums2_hm = HashMap::with_capacity(nums2.len());
+    pub fn find_words(words: Vec<String>) -> Vec<String> {
+        let keyboard = {
+            let mut keyboard = HashMap::new();
+            let rows = [
+                vec!['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+                vec!['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+                vec!['z', 'x', 'c', 'v', 'b', 'n', 'm'],
+            ];
 
-            for (index, num) in nums2.iter().enumerate() {
-                nums2_hm.insert(num, index);
-            }
-
-            nums2_hm
-        };
-
-        for num1 in nums1 {
-            let nums2_index = nums2_hm.get(&num1).unwrap();
-            for i in nums2_index + 1..=nums2.len() {
-                match nums2.get(i) {
-                    Some(&num2) => {
-                        if num2 > num1 {
-                            ans.push(num2);
-                            break;
-                        }
-                    }
-                    None => ans.push(-1),
+            for (index, row) in rows.into_iter().enumerate() {
+                for char in row {
+                    keyboard.insert(char, index as i8);
+                    keyboard.insert(char.to_ascii_uppercase(), index as i8);
                 }
             }
+
+            keyboard
+        };
+
+        let mut answer = vec![];
+        'outer: for word in words {
+            let mut word_chars = word.chars();
+            let mut previous_row_number = keyboard[&word_chars.next().unwrap()];
+
+            for char in word_chars {
+                let row_number = keyboard[&char];
+
+                if row_number != previous_row_number {
+                    continue 'outer;
+                }
+                previous_row_number = row_number;
+            }
+
+            answer.push(word);
         }
 
-        ans
+        answer
     }
 }
 
 fn main() {
+    println!("a: {}, A: {}", 'a' as u32, 'A' as u32);
     assert_eq!(
-        Solution::next_greater_element(vec![4, 1, 2], vec![1, 3, 4, 2]),
-        vec![-1, 3, -1]
+        Solution::find_words(vec![
+            "Hello".to_owned(),
+            "Alaska".to_owned(),
+            "Dad".to_owned(),
+            "Peace".to_owned()
+        ]),
+        vec!["Alaska", "Dad"]
     );
 
     assert_eq!(
-        Solution::next_greater_element(vec![2, 4], vec![1, 2, 3, 4]),
-        vec![3, -1]
+        Solution::find_words(vec!["omk".to_owned()]),
+        Vec::<String>::new()
+    );
+
+    assert_eq!(
+        Solution::find_words(vec!["adsdf".to_owned(), "sfd".to_owned()]),
+        vec!["adsdf", "sfd"]
+    );
+
+    assert_eq!(
+        Solution::find_words(vec!["a".to_owned(), "b".to_owned()]),
+        vec!["a", "b"]
     );
 }
