@@ -1,29 +1,18 @@
 struct Solution;
 
 impl Solution {
-    pub fn matrix_reshape(mut mat: Vec<Vec<i32>>, r: i32, c: i32) -> Vec<Vec<i32>> {
-        let n = (r * c) as usize;
-        
-        if n != mat.len() * mat[0].len() {
+    pub fn matrix_reshape(mat: Vec<Vec<i32>>, r: i32, c: i32) -> Vec<Vec<i32>> {
+        let r = r as usize;
+        let c = c as usize;
+
+        if r * c != mat.len() * mat[0].len() {
             return mat;
         }
 
-        let flat_mat = if mat.len() == 1 {
-            mat.pop().unwrap()
-        } else {
-            let mut flat_mat = Vec::with_capacity(n);
+        let flat_mat: Vec<i32> = mat.into_iter().flatten().collect();
 
-            for row in mat {
-                for column in row {
-                    flat_mat.push(column);
-                }
-            }
-
-            flat_mat
-        };
-
-        let mut reshaped_mat = Vec::with_capacity(n);
-        for chunk in flat_mat.chunks(c as usize) {
+        let mut reshaped_mat = Vec::with_capacity(r * c);
+        for chunk in flat_mat.chunks(c) {
             reshaped_mat.push(Vec::from(chunk));
         }
 
